@@ -3,109 +3,133 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#101019">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#11111b">
 <title>KIMIMI — Your AI</title>
 <style>
+:root{color-scheme:dark;--bg:#101019;--panel:#181824;--panel2:#222231;--border:#343447;--text:#f4f2ff;--muted:#a4a2bb;--accent:#9b8cff;--accent2:#6755d9}
 *{box-sizing:border-box}
-body{margin:0;background:#101019;color:#f4f3fb;font-family:system-ui,-apple-system,sans-serif}
-.app{max-width:760px;height:100dvh;margin:auto;display:flex;flex-direction:column;padding:14px}
-header{padding:15px 4px;border-bottom:1px solid #30303e}
-h1{margin:0;font-size:27px;letter-spacing:2px}
-.sub{color:#a6a4b9;font-size:13px;margin-top:4px}
-#status{font-size:12px;color:#a6a4b9;margin-top:10px}
-#chat{flex:1;overflow:auto;padding:18px 0;display:flex;flex-direction:column;gap:14px}
-.msg{padding:13px 15px;border-radius:17px;max-width:90%;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}
-.user{align-self:flex-end;background:#6557d9;color:white}
-.assistant{align-self:flex-start;background:#222230;border:1px solid #353548}
-form{display:flex;gap:8px;padding:12px 0 6px}
-textarea{flex:1;resize:none;min-width:0;max-height:130px;border:1px solid #39394d;border-radius:15px;background:#1c1c29;color:white;padding:13px;font:inherit;outline:none}
-button{border:0;border-radius:13px;padding:0 18px;background:#7969ed;color:white;font-weight:700;font-size:15px}
-button:disabled{opacity:.5}
-.note{text-align:center;font-size:11px;color:#9694aa;padding:8px 0}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,sans-serif}
+button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.5}
+.app{height:100dvh;display:flex;overflow:hidden}
+.sidebar{width:270px;flex-shrink:0;background:#151520;border-right:1px solid var(--border);padding:15px;display:flex;flex-direction:column;gap:12px}
+.brand{font-size:24px;font-weight:800;letter-spacing:2px;padding:5px 3px}.brand span{color:var(--accent)}
+.btn{border:1px solid var(--border);background:var(--panel2);color:var(--text);padding:10px 12px;border-radius:12px;text-align:left}
+.btn:hover{border-color:var(--accent)}.primary{background:var(--accent2);border-color:var(--accent2);color:white;text-align:center}
+.history-title{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:9px}
+#history{overflow:auto;display:flex;flex-direction:column;gap:5px}
+.chat-row{display:flex;align-items:center;gap:4px}.chat-select{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid transparent;background:transparent;color:var(--muted);padding:9px;border-radius:9px;text-align:left}.chat-select.active{background:var(--panel2);color:var(--text);border-color:var(--border)}
+.small-btn{border:0;background:transparent;color:var(--muted);padding:7px;border-radius:8px}.small-btn:hover{background:var(--panel2);color:var(--text)}
+.side-bottom{margin-top:auto;display:grid;gap:9px}.storage-note{font-size:11px;color:var(--muted)}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{height:65px;flex-shrink:0;display:flex;align-items:center;gap:12px;padding:0 18px;border-bottom:1px solid var(--border);background:#101019ef}
+.top-title{font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill{font-size:11px;color:#c9c1ff;background:#28233e;border:1px solid #49406c;padding:5px 9px;border-radius:20px;max-width:48%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#chat{flex:1;overflow:auto;padding:24px max(16px,calc((100% - 760px)/2));display:flex;flex-direction:column;gap:20px;scroll-behavior:smooth}
+.welcome{margin:auto 0;text-align:center;padding:25px 8px}.orb{width:65px;height:65px;margin:0 auto 16px;border-radius:22px;background:linear-gradient(135deg,#3a2f69,#9d85ff);display:grid;place-items:center;font-size:31px;box-shadow:0 0 40px #7961e533}
+.welcome h1{font-size:30px;margin:8px 0}.welcome p{color:var(--muted);margin:0 auto;max-width:400px}
+.suggestions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:22px}.suggestion{border:1px solid var(--border);background:var(--panel);color:var(--text);padding:10px 12px;border-radius:14px}
+.message{display:flex;gap:10px;align-items:flex-start;max-width:100%}.avatar{width:32px;height:32px;flex-shrink:0;border-radius:11px;background:#29253f;color:#c9bdff;display:grid;place-items:center;font-weight:800}.user .avatar{background:#34304a;color:white}
+.msg-content{min-width:0;max-width:100%;overflow-wrap:anywhere}.msg-role{font-size:12px;color:var(--muted);margin:2px 0 6px}.msg-text{line-height:1.7;overflow-wrap:anywhere}
+.msg-text p{margin:0 0 12px}.msg-text p:last-child{margin-bottom:0}.msg-text h1,.msg-text h2,.msg-text h3{line-height:1.3;margin:17px 0 8px}.msg-text h1{font-size:23px}.msg-text h2{font-size:20px}.msg-text h3{font-size:17px}
+.msg-text ul,.msg-text ol{padding-left:24px;margin:7px 0 13px}.msg-text li{margin:4px 0}.msg-text blockquote{border-left:3px solid var(--accent);margin:10px 0;padding:4px 12px;color:#c6c3dc}
+.msg-text pre{overflow:auto;background:#0b0b12;border:1px solid var(--border);padding:13px;border-radius:12px}.msg-text code{font-family:ui-monospace,monospace;font-size:.9em}.msg-text :not(pre)>code{background:#2a2938;padding:2px 5px;border-radius:5px}
+.msg-text a{color:#b9aaff}.msg-text table{border-collapse:collapse;display:block;overflow:auto}.msg-text th,.msg-text td{border:1px solid var(--border);padding:7px 10px}.msg-text hr{border:0;border-top:1px solid var(--border)}
+.msg-actions{display:flex;gap:5px;margin-top:8px}.msg-actions button{font-size:12px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--muted);padding:4px 8px}
+.composer-wrap{flex-shrink:0;padding:12px 16px max(12px,env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 15%)}
+.composer{max-width:800px;margin:auto;border:1px solid #444258;background:var(--panel);border-radius:18px;padding:9px;display:flex;align-items:flex-end;gap:8px}
+#input{flex:1;min-width:0;max-height:180px;resize:none;border:0;outline:0;background:transparent;color:var(--text);padding:9px;line-height:1.5}#input::placeholder{color:#8d8aa5}
+.send{background:var(--accent2);color:white;border:0;border-radius:12px;width:43px;height:43px;font-size:19px;flex-shrink:0}
+.footnote{max-width:800px;margin:6px auto 0;text-align:center;color:var(--muted);font-size:10px}
+.mobile-menu{display:none}.overlay{display:none}
+@media(max-width:680px){.sidebar{position:fixed;z-index:5;inset:0 auto 0 0;width:min(290px,85vw);transform:translateX(-105%);transition:transform .2s;box-shadow:12px 0 40px #0007}.sidebar.open{transform:translateX(0)}.overlay.open{display:block;position:fixed;inset:0;background:#0009;z-index:4}.mobile-menu{display:inline-block;border:1px solid var(--border);background:var(--panel);color:var(--text);padding:8px 11px;border-radius:10px}.topbar{padding:0 11px;gap:9px;height:59px}#chat{padding:19px 14px}.composer-wrap{padding:9px 10px max(10px,env(safe-area-inset-bottom))}.pill{max-width:42%;font-size:10px}.welcome h1{font-size:26px}}
 </style>
 </head>
 <body>
 <div class="app">
-<header>
-<h1>✦ KIMIMI</h1>
-<div class="sub">Your personal AI assistant</div>
-<div id="status">Connecting to KIMIMI…</div>
+<div id="overlay" class="overlay"></div>
+<aside id="sidebar" class="sidebar">
+<div class="brand">✦ KIMI<span>MI</span></div>
+<button id="newChat" class="btn primary">＋ &nbsp; New chat</button>
+<div class="history-title">Your conversations</div>
+<div id="history"></div>
+<div class="side-bottom">
+<button id="renameChat" class="btn">✎ &nbsp; Rename current chat</button>
+<button id="deleteChat" class="btn">⌫ &nbsp; Delete current chat</button>
+<div class="storage-note">History is saved in this browser on this device. Clearing site data may erase it.</div>
+</div>
+</aside>
+<main class="main">
+<header class="topbar">
+<button id="menu" class="mobile-menu" aria-label="Open menu">☰</button>
+<div id="chatTitle" class="top-title">New chat</div>
+<div id="modelBadge" class="pill">Model: checking…</div>
 </header>
-<main id="chat" aria-live="polite">
-<div class="msg assistant">Hey! I'm KIMIMI. Send me a message to get started. ✨</div>
-</main>
-<form id="form">
-<textarea id="input" rows="1" placeholder="Ask KIMIMI anything…" required></textarea>
-<button id="send" type="submit">Send</button>
+<section id="chat" aria-live="polite"></section>
+<div class="composer-wrap">
+<form id="form" class="composer">
+<textarea id="input" rows="1" placeholder="Message KIMIMI…" required></textarea>
+<button id="send" class="send" type="submit" aria-label="Send message">↑</button>
 </form>
-<div class="note">AI responses require an available free model. Avoid sending private information.</div>
+<div class="footnote">KIMIMI can make mistakes. Check important information.</div>
+</div>
+</main>
 </div>
 <script>
+(()=>{
+"use strict";
 const API="https://kimimi-api.khotsam248.workers.dev";
-const chat=document.getElementById("chat");
-const form=document.getElementById("form");
-const input=document.getElementById("input");
-const send=document.getElementById("send");
-const status=document.getElementById("status");
-let messages=[];
-
-function bubble(text,role){
- const el=document.createElement("div");
- el.className="msg "+role;
- el.textContent=text;
- chat.appendChild(el);
- chat.scrollTop=chat.scrollHeight;
- return el;
+const KEY="kimimi_chats_v2";
+const SYSTEM="You are KIMIMI, the user's personal AI assistant. Always identify yourself as KIMIMI, never as another assistant or company. Be helpful, accurate, clear, and honest about uncertainty. Format answers using Markdown when useful. Do not claim to be an official product of OpenAI, Google, Moonshot, or another company.";
+const $=id=>document.getElementById(id);
+const chatEl=$("chat"),historyEl=$("history"),input=$("input"),send=$("send");
+let chats=[],currentId=null,busy=false,lastModel="not reported";
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function inlineMD(s){let x=esc(s);x=x.replace(/`([^`\n]+)`/g,"<code>$1</code>");x=x.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>");x=x.replace(/~~(.+?)~~/g,"<del>$1</del>");x=x.replace(/(^|[^*])\*([^*\n]+)\*/g,"$1<em>$2</em>");x=x.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');return x}
+function markdown(text){
+ let html="";
+ String(text||"").replace(/\r/g,"").split(/```/).forEach((part,i)=>{
+ if(i%2){const lines=part.split("\n"),first=lines[0].trim(),code=/^[\w+-]{1,20}$/.test(first)?lines.slice(1).join("\n"):part;html+="<pre><code>"+esc(code.replace(/^\n|\n$/g,""))+"</code></pre>";return}
+ const lines=part.split("\n");let para=[],list=[],typ=null;
+ const fp=()=>{if(para.length){html+="<p>"+para.map(inlineMD).join("<br>")+"</p>";para=[]}};
+ const fl=()=>{if(list.length){html+="<"+(typ==="ol"?"ol":"ul")+">"+list.map(v=>"<li>"+inlineMD(v)+"</li>").join("")+"</"+(typ==="ol"?"ol":"ul")+">";list=[];typ=null}};
+ for(const raw of lines){const s=raw.trim();if(!s){fp();fl();continue}if(/^[-*_]{3,}$/.test(s)){fp();fl();html+="<hr>";continue}
+ const h=s.match(/^(#{1,3})\s+(.+)/);if(h){fp();fl();let n=h[1].length;html+="<h"+n+">"+inlineMD(h[2])+"</h"+n+">";continue}
+ const q=s.match(/^>\s?(.*)/);if(q){fp();fl();html+="<blockquote>"+inlineMD(q[1])+"</blockquote>";continue}
+ const ol=s.match(/^\d+[.)]\s+(.+)/),ul=s.match(/^[-*+]\s+(.+)/);if(ol||ul){fp();let t=ol?"ol":"ul";if(typ&&typ!==t)fl();typ=t;list.push((ol||ul)[1]);continue}fl();para.push(s)}
+ fp();fl()
+ });return html||"<p></p>"
 }
-
-fetch(API).then(r=>{
- if(!r.ok) throw Error();
- return r.json();
-}).then(()=>{
- status.textContent="● API connected";
- status.style.color="#7ee0a2";
-}).catch(()=>{
- status.textContent="API connection needs checking";
-});
-
-form.addEventListener("submit",async e=>{
- e.preventDefault();
- const text=input.value.trim();
- if(!text||send.disabled)return;
- bubble(text,"user");
- messages.push({role:"user",content:text});
- input.value="";
- send.disabled=true;
- send.textContent="…";
- const waiting=bubble("Thinking…","assistant");
- try{
-  const r=await fetch(API,{
-   method:"POST",
-   headers:{"Content-Type":"application/json"},
-   body:JSON.stringify({messages})
-  });
-  const data=await r.json();
-  if(!r.ok)throw Error(data.error||data.message||"Request failed ("+r.status+")");
-  const answer=data.choices?.[0]?.message?.content;
-  if(!answer)throw Error(data.error?.message||"No answer returned. The free model may be unavailable.");
-  waiting.textContent=answer;
-  messages.push({role:"assistant",content:answer});
- }catch(err){
-  waiting.textContent="Sorry, I couldn't get an AI response.\n"+err.message+"\n\nCheck the Worker API key, free-model availability, and Cloudflare logs.";
-  messages.pop();
- }finally{
-  send.disabled=false;
-  send.textContent="Send";
-  input.focus();
- }
-});
-input.addEventListener("keydown",e=>{
- if(e.key==="Enter"&&!e.shiftKey){
-  e.preventDefault();
-  form.requestSubmit();
- }
-});
+function save(){try{localStorage.setItem(KEY,JSON.stringify(chats))}catch(e){alert("Could not save history. Browser storage may be full or disabled.")}}
+function active(){return chats.find(c=>c.id===currentId)}
+function makeChat(){const c={id:uid(),title:"New chat",messages:[],model:"not reported",updated:Date.now()};chats.unshift(c);currentId=c.id;save();renderAll();closeMenu();input.focus()}
+function closeMenu(){$("sidebar").classList.remove("open");$("overlay").classList.remove("open")}
+function renderHistory(){historyEl.innerHTML="";if(!chats.length){historyEl.innerHTML='<div class="storage-note">Your chats will appear here.</div>';return}
+ chats.forEach(c=>{const row=document.createElement("div");row.className="chat-row";const b=document.createElement("button");b.className="chat-select"+(c.id===currentId?" active":"");b.textContent=c.title||"New chat";b.title=c.title||"New chat";b.onclick=()=>{currentId=c.id;renderAll();closeMenu()};const more=document.createElement("button");more.className="small-btn";more.textContent="⋯";more.title="Rename chat";more.onclick=()=>{const n=prompt("Rename this chat:",c.title);if(n&&n.trim()){c.title=n.trim().slice(0,80);save();renderAll()}};row.append(b,more);historyEl.append(row)})
+}
+function welcome(){chatEl.innerHTML='<div class="welcome"><div class="orb">✦</div><h1>Hey, I’m KIMIMI</h1><p>Your personal AI space. What would you like to explore today?</p><div class="suggestions"><button class="suggestion">Explain a difficult topic</button><button class="suggestion">Help me make a plan</button><button class="suggestion">Write something creative</button></div></div>';chatEl.querySelectorAll(".suggestion").forEach(b=>b.onclick=()=>{input.value=b.textContent;input.focus()})}
+function renderMessages(){chatEl.innerHTML="";const c=active();if(!c||!c.messages.length){welcome();return}
+ c.messages.forEach(m=>{const wrap=document.createElement("article");wrap.className="message "+m.role;const av=document.createElement("div");av.className="avatar";av.textContent=m.role==="user"?"Y":"✦";const content=document.createElement("div");content.className="msg-content";const role=document.createElement("div");role.className="msg-role";role.textContent=m.role==="user"?"You":"KIMIMI";const txt=document.createElement("div");txt.className="msg-text";if(m.pending){txt.textContent="Thinking…";txt.style.color="var(--muted)"}else txt.innerHTML=markdown(m.content);content.append(role,txt);
+ if(m.role==="assistant"&&!m.pending){const actions=document.createElement("div");actions.className="msg-actions";const copy=document.createElement("button");copy.textContent="Copy";copy.onclick=async()=>{try{await navigator.clipboard.writeText(m.content);copy.textContent="Copied"}catch(e){prompt("Copy this answer:",m.content)}};actions.append(copy);content.append(actions)}
+ wrap.append(av,content);chatEl.append(wrap)});chatEl.scrollTop=chatEl.scrollHeight}
+function renderAll(){const c=active();$("chatTitle").textContent=c?c.title:"New chat";$("modelBadge").textContent="Model: "+(c?.model||lastModel);renderHistory();renderMessages()}
+function load(){try{const v=JSON.parse(localStorage.getItem(KEY)||"[]");if(Array.isArray(v))chats=v.filter(c=>c&&typeof c.id==="string"&&Array.isArray(c.messages))}catch(e){chats=[]}if(!chats.length)makeChat();else{currentId=chats[0].id;renderAll()}}
+async function checkAPI(){try{const r=await fetch(API);if(!r.ok)throw Error();$("modelBadge").textContent="API online · model on reply"}catch(e){$("modelBadge").textContent="API connection issue"}}
+async function submit(e){e.preventDefault();const text=input.value.trim(),c=active();if(!text||busy||!c)return;busy=true;send.disabled=true;c.messages.push({role:"user",content:text});if(c.title==="New chat")c.title=text.slice(0,42)+(text.length>42?"…":"");c.updated=Date.now();chats.sort((a,b)=>b.updated-a.updated);input.value="";input.style.height="auto";const pending={role:"assistant",content:"",pending:true};c.messages.push(pending);save();renderAll();
+ try{const messages=[{role:"system",content:SYSTEM},...c.messages.filter(m=>!m.pending).map(m=>({role:m.role,content:m.content}))];const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages})});let data;try{data=await r.json()}catch(e){throw Error("The API returned an unreadable response.")}if(!r.ok)throw Error(data.error?.message||data.error||data.message||("Request failed ("+r.status+")"));const answer=data.choices?.[0]?.message?.content;if(typeof answer!=="string"||!answer.trim())throw Error(data.error?.message||"No answer returned. The free model may be unavailable.");pending.content=answer;delete pending.pending;c.model=data.model||"model not reported";lastModel=c.model
+ }catch(err){pending.content="I couldn't get a reply: "+err.message+"\n\nTry again in a moment. If the problem continues, check the Cloudflare Worker and OpenRouter status.";delete pending.pending}
+ c.updated=Date.now();chats.sort((a,b)=>b.updated-a.updated);save();renderAll();busy=false;send.disabled=false;input.focus()}
+$("form").addEventListener("submit",submit);
+input.addEventListener("input",()=>{input.style.height="auto";input.style.height=Math.min(input.scrollHeight,180)+"px"});
+input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("form").requestSubmit()}});
+$("newChat").onclick=makeChat;
+$("renameChat").onclick=()=>{const c=active();if(!c)return;const n=prompt("Rename this chat:",c.title);if(n&&n.trim()){c.title=n.trim().slice(0,80);save();renderAll()}};
+$("deleteChat").onclick=()=>{const c=active();if(!c)return;if(!confirm('Delete "'+c.title+'"? This cannot be undone.'))return;chats=chats.filter(x=>x.id!==c.id);if(!chats.length){currentId=null;makeChat()}else{currentId=chats[0].id;save();renderAll()}};
+$("menu").onclick=()=>{$("sidebar").classList.add("open");$("overlay").classList.add("open")};
+$("overlay").onclick=closeMenu;
+load();checkAPI();
+})();
 </script>
 </body>
 </html>
